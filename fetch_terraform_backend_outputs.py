@@ -41,6 +41,10 @@ options:
       - AWS secret access key to be used for bucket access.
       - If declared aws_profile option is ignored and aws_access_key option is required.
     default: ""
+  aws_region:
+    description: 
+      - ID of AWS region to connect to s3 bucket from.
+    default: "us-east-1"
 ...
 '''
 
