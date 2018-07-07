@@ -1,23 +1,76 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright: (c) 2018, Stefan Roman <stefan.roman@katapult.cloud>
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+ANSIBLE_METADATA = {
+    'status': ['preview'],
+    'supported_by': 'community',
+    'metadata_version': '1.1'
+}
+
 DOCUMENTATION = '''
 ---
-module: s3_terraform_backend
-short_description: Get output variables from Terraform s3 backend
+module: fetch_terraform_backend_outputs
+short_description: Get output variables from Terraform s3 backend.
+description:
+  - Get output variables from Terraform s3 backend.
+version_added: "2.4"
+author: Stefan Roman (@katapultcloud)
+options: 
+  bucket:
+    description: 
+      - Name of the s3 bucket where Terraform state is stored.
+    required: true
+  object:
+    description: 
+      - Name of the s3 object where Terraform state is stored.
+    required: true
+  aws_profile:
+    description: 
+      - Name of the aws profile to be used.
+    default: "default"
+  aws_access_key:
+    description: 
+      - AWS access key to be used for bucket access.
+      - If declared aws_profile option is ignored and aws_secret_access_key option is required. 
+    default: ""
+  aws_secret_access_key:
+    description: 
+      - AWS secret access key to be used for bucket access.
+      - If declared aws_profile option is ignored and aws_access_key option is required.
+    default: ""
+...
 '''
 
 EXAMPLES = '''
+---
 - name: Get Terraform EFS backend variables
-  s3_terraform_backend:
+  fetch_terraform_backend_outputs:
     bucket: "example-bucket"
-    key: "storage/terraform.tfstate"
-  register: storage
+    object: "storage/terraform.tfstate"
+  register: terraform_storage
 
 - name: Mount EFS storage
   mount:
     state: "mounted"
 	path: /mnt
-    src: "{{ storage.meta.efs_id }}"
+    src: "{{ terraform_storage.vars.efs_id }}"
     fstype: efs
     opts: rw
+...
+'''
+
+RETURN = '''
+---
+vars:
+  description: 
+    - Outputs from Terraform backend in JSON format are returned upon successful execution.
+  type: json
+  returned: success
+  version_added: "2.4"
+...
 '''
 
 from ansible.module_utils.basic import *
@@ -43,7 +96,7 @@ def format_data(data):
 
 def backend_pull(client, data):
     s3 = client.resource('s3')
-    obj = s3.Object(data['bucket'], data['key'])
+    obj = s3.Object(data['bucket'], data['object'])
     raw_data = obj.get()['Body'].read().decode('utf-8')
     return format_data(raw_data)
 
@@ -71,7 +124,7 @@ def main():
             "required": True,
             "type": "str"
         },
-        "key": {
+        "object": {
             "required": True,
             "type": "str"
         },
@@ -98,7 +151,7 @@ def main():
 
     if s3_client:
         result = backend_pull(s3_client, module.params)
-        module.exit_json(changed=False, meta=result)
+        module.exit_json(changed=False, vars=result)
     else:
         module.fail_json(msg="Wrong AWS credentials")
 
