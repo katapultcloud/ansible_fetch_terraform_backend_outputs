@@ -1,11 +1,11 @@
 # ansible_fetch_terraform_backend_outputs
 Ansible module that fetches output dictionary from Terraform tfstate file from s3 backend.
 
-# Requirements
+## Requirements
 * boto3 
 * json 
 
-# Module Options
+## Module Options
 * bucket - Name of the s3 bucket where Terraform state is stored. Required.
 * object - Name of the s3 object where Terraform state is stored. Required.
 * aws_profile - Name of the aws profile to be used. Default "default".
@@ -14,7 +14,7 @@ Ansible module that fetches output dictionary from Terraform tfstate file from s
 * aws_region - ID of AWS region to connect to s3 bucket from. Default "us-east-1".
 
 
-# Examples
+## Examples
 The following play fetches Terraform outputs from arn:aws:s3:::terraform-state-repository/ireland/katapult_cloud_networking.tfstate using default AWS profile in `~/.aws/credentials`.
 ```yaml
 ---
@@ -51,11 +51,11 @@ The following play fetches Terraform outputs from arn:aws:s3:::terraform-state-r
         vpc_id: "{{ vpc_networking.vars.katapult_cloud_vpc_id }}"
 ...
 ```
-# Recommendations
+## Recommendations
 Utilize profile or access keys with minimal privileges to AWS resources. If possible utilize credentials with read only access to the Terraform state bucket.
 
-# License
+## License
 MIT
 
-# Author Information
+## Author Information
 Stefan Roman (stefan.roman@katapult.cloud)
