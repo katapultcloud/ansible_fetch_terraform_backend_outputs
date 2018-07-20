@@ -55,7 +55,7 @@ The following play fetches Terraform outputs from arn:aws:s3:::terraform-state-r
 Utilize profile or access keys with minimal privileges to AWS resources. If possible utilize credentials with read only access to the Terraform state bucket.
 
 ## License
-MIT
+GPL-v3
 
 ## Author Information
 Stefan Roman (stefan.roman@katapult.cloud)
