@@ -85,16 +85,12 @@ import json
 
 def format_data(data):
     pretty_data = json.loads(data)
-    buffer = {}
     result = {}
-    for element in pretty_data['modules']:
-        buffer = {}
-        buffer = element['outputs']
-        permanent = buffer.copy()
-        permanent.update(buffer)
+    permanent = pretty_data['outputs']
 
-    for key, value in permanent.iteritems():
+    for key, value in permanent.items():
         result[key] = value['value']
+
     return result
 
 
